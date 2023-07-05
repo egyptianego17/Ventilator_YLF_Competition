@@ -65,6 +65,13 @@ void loop() {
   delay(5000);           // wait 5 seconds for next scan
 }
 ```
+![image](https://github.com/egyptianego17/Ventilator_YLF_Competition/assets/86708003/557b6030-f2c4-4d95-a2c4-aafbe755386a)
+![image](https://github.com/egyptianego17/Ventilator_YLF_Competition/assets/86708003/36097b6b-3cb5-4ff2-91f0-61beaf853ab2)
+![image](https://github.com/egyptianego17/Ventilator_YLF_Competition/assets/86708003/d134f043-706e-414e-9c73-ee0ad3f4bdc8)
+![image](https://github.com/egyptianego17/Ventilator_YLF_Competition/assets/86708003/c820fe4b-49ab-493b-9625-a42271420efb)
+
+
+
 
 ## BMP280 Conninctions
 ![image](https://github.com/egyptianego17/Ventilator_YLF_Competition/assets/86708003/a1a696ed-a635-4f41-80c4-c9d01393bb0e)
