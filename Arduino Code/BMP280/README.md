@@ -1,6 +1,6 @@
 # BMP280
 
-## You have to detect i<sub>2</sub>c addres first
+## You have to detect I<sub>2</sub>C address first
 use this code to get it:
 ```
 // --------------------------------------
