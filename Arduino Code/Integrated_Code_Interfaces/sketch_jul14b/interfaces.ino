@@ -28,7 +28,7 @@ void All_Modules_Init(){
                   Adafruit_BMP280::STANDBY_MS_500);  /* Standby time. */
 }
 int getAnalogVoltage(int analogPin){
-  int analogValue = analogRead(PIN1_ANALOG);// read the input on analog pin A0:
+  int analogValue = analogRead(analogPin);// read the input on analog pin A0 or A1:
   float voltage1 = ( analogValue/ 1023.0); // Rescale the analog value to potentiometer's voltage (0V to 5V):
 }
 void LCD_PrintAnalogVoltages(int v1,int v2){
@@ -142,7 +142,7 @@ void I2C_ScanDevices(){
   }
 
 }
-void StepperRunTillPosition(){
+void StepperRunTillPosition(uint16_t dest){
 
   // Change direction once the motor reaches target position
 	if (myStepper.distanceToGo() == 0) 
@@ -169,4 +169,105 @@ float BMP_readPressure_hg(){
 float BMP_readAltitude_ft(){
   return bmp.readAltitude(1019.66)*3.28084;
 }
+//////////////////////////////////////////////////////////////////////////////////
+  
+void check_age_setting() {
+  if (!digitalRead(P_SETTING_BUTTON) && can_read_age_button) {
+    age_button_time = millis();
+    can_read_age_button = false;
+    age_state = (age_state + 1) % 3;
+    switch(age_state){
+      case  0 :
+      lcd.println("age state : Adult ");
+      break;
+      case  1 :
+      lcd.println("age state : Child ");
+      break;
+      case  2 :
+      lcd.println("age state : Infant ");
+      break;
+    }
+  }
+}
+ 
+int mapPotValues(uint16_t unmapped_pot_val, int8_t pot_index) {
+  return map(unmapped_pot_val, 0, 1024, 5, -5);
+}
+  
+void LcdPrintUpdatedPotValues() {
+///////////////////////////////////////////////
+int v1 = getAnalogVoltage(PIN_VOLUME);
+int v2 = getAnalogVoltage(PIN_PRESSURE);
+LCD_PrintAnalogVoltages(v1,v2);
+}
 
+ 
+void check_start_stop() {
+  if (!digitalRead(P_START_BUTTON) && can_read_start_button) {
+    if (warn_user) {
+      red_led(true);
+      warn_user = false;
+      lcd.init();
+    } else {
+      start_button_time = millis();
+      can_read_start_button = false;
+      ventilating = !ventilating;
+      red_led(!ventilating);
+      green_led(ventilating);
+    }
+  }
+}
+ 
+bool check_halt() {
+  if (ventilating && warn_user) {
+    return true;
+  }
+  bool was_ventilating = ventilating;
+  check_start_stop();
+  if (was_ventilating && !ventilating) {
+    return true;
+  }
+  return false;
+}
+  
+uint16_t get_ms_per_breath() {
+  uint8_t breath_per_min = nom_vals[RATE][age_state] + val_inc[RATE][age_state] * pot_vals[RATE];
+  return round(1000 / (breath_per_min / 60.0));
+}
+ 
+uint16_t vol_to_ang(uint16_t vol) {
+  return 4.89427e-7 * pow(vol, 3) - 8.40105e-4 * pow(vol, 2) + 0.64294 * vol + 28.072327;
+}
+ 
+void red_led(bool on) {
+ 
+  analogWrite(P_RED_LED, on ? 5 : 0);
+}
+ 
+void green_led(bool on) {
+  digitalWrite(P_GREEN_LED, on ? HIGH : LOW);
+}
+
+void flash_red() {
+  if ((millis() - red_led_flash) > 200) {
+    red_led(!red_led_flash_on);
+    red_led_flash_on = !red_led_flash_on;
+    red_led_flash = millis();
+  }
+}
+ 
+double predict_current() {
+ 
+  uint16_t v = nom_vals[0][age_state] + val_inc[0][age_state] * pot_vals[0];
+  uint8_t p = nom_vals[1][age_state] + val_inc[1][age_state] * pot_vals[1];
+  return -1.041041e3 + 2.35386 * v + 2.316309e-3 * pow(v, 2) - 3.887507e1 * p + 7.7198644 * pow(p, 2) - 4.2099326e-2 * v * p;
+}
+ 
+void update_current() {
+ 
+  uint16_t potentiometer_raw = analogRead(P_CURRENT);
+  double voltage_raw = (5.0 / 1023.0) * analogRead(VIN);
+  voltage = voltage_raw - QOV + 0.012;
+  double current = voltage / sensitivity[MODEL] * -1;
+  current_sum += current;
+}
