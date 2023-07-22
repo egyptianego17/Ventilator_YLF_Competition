@@ -7,6 +7,9 @@ void setup() {
 }
 
 void loop() {
+   // Read analog voltage values from potentiometers
+  int volume_voltage = getAnalogVoltage(PIN_VOLUME);
+  int pressure_voltage = getAnalogVoltage(PIN_PRESSURE);
   
   if (!can_read_age_button && millis() - age_button_time >= 500) {
     can_read_age_button = true;
@@ -71,10 +74,7 @@ void loop() {
   }
 
 
-  // Read analog voltage values from potentiometers
-  int volume_voltage = getAnalogVoltage(PIN_VOLUME);
-  int pressure_voltage = getAnalogVoltage(PIN_PRESSURE);
-  
+ 
   // Convert the voltage values to tidal volume, PIP, and PEEP pressures
   tidal_volume = map(volume_voltage, 0, 1023, 0, 1000); // in mL
   PIP_pressure = map(pressure_voltage, 0, 1023, 0, 50); // in cmH2O
@@ -86,6 +86,8 @@ void loop() {
   float temperature_c = BMP_readTemperature_c(); // BMP280 sensor
   float pressure_hPa = BMP_readPressure_hPa(); // BMP280 sensor
   float altitude_m = BMP_readAltitude_m(); // BMP280 sensor
+  LCD_PrintValues(tidal_volume,PIP_pressure,dht_values,max_sensor_value);
   // Delay for a short time to allow the stepper motor to move
   delay(10);
 }
+

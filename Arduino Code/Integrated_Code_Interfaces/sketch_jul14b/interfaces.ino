@@ -31,17 +31,46 @@ int getAnalogVoltage(int analogPin){
   int analogValue = analogRead(analogPin);// read the input on analog pin A0 or A1:
   float voltage1 = ( analogValue/ 1023.0); // Rescale the analog value to potentiometer's voltage (0V to 5V):
 }
-void LCD_PrintAnalogVoltages(int v1,int v2){
+void LCD_PrintValues(int vol,int pip,float* DHT,long max_sensor_value ){
 
   lcd.setCursor(0, 0);
-  lcd.print("V1:");
-  lcd.setCursor(0, 1);
-  lcd.print(v1);
-  lcd.setCursor(0, 2);
-  lcd.print("V2:");
-  lcd.setCursor(0, 3);
-  lcd.print(v2);
+  lcd.print("VOL:");
+  lcd.setCursor(6, 0);
+  lcd.print(vol);
+  lcd.setCursor(10, 0);
+  lcd.print("PIP:");
+  lcd.setCursor(16, 0);
+  lcd.print(pip);
 
+  lcd.setCursor(0, 1);
+  lcd.print("HUM:");
+  lcd.setCursor(5, 1);
+  lcd.print(DHT[DHT_HUMIDITY]);
+  lcd.setCursor(8, 1);
+  lcd.print("Temp:");
+  lcd.setCursor(16, 1);
+  lcd.print(DHT[DHT_TEMP_C]);
+
+    lcd.setCursor(0, 2);
+  lcd.print("Heart Bitrate:");
+  lcd.setCursor(15, 2);
+  lcd.print(max_sensor_value);
+}
+void SerialPrintDHT_Values(float* DHT){
+    
+  Serial.print(F("Humidity: "));
+  Serial.print(DHT[DHT_HUMIDITY]);
+  Serial.print(F("%  Temperature: "));
+  Serial.print(DHT[DHT_TEMP_C]);
+  Serial.print(F("°C "));
+  Serial.print(DHT[DHT_TEMP_F]);
+  Serial.print(F("°F  Heat index: "));
+  Serial.print(DHT[DHT_HEAT_INDEX_C]);
+  Serial.print(F("°C "));
+  Serial.print(DHT[DHT_HEAT_INDEX_F]);
+  Serial.println(F("°F"));
+
+  
 }
 long ReadMaxSensor() {
  
@@ -90,22 +119,6 @@ float* ReadDHT_Values(){
 
   return values;
 }
-void SerialPrintDHT_Values(float* DHT){
-    
-  Serial.print(F("Humidity: "));
-  Serial.print(DHT[DHT_HUMIDITY]);
-  Serial.print(F("%  Temperature: "));
-  Serial.print(DHT[DHT_TEMP_C]);
-  Serial.print(F("°C "));
-  Serial.print(DHT[DHT_TEMP_F]);
-  Serial.print(F("°F  Heat index: "));
-  Serial.print(DHT[DHT_HEAT_INDEX_C]);
-  Serial.print(F("°C "));
-  Serial.print(DHT[DHT_HEAT_INDEX_F]);
-  Serial.println(F("°F"));
-
-  
-}
 void I2C_ScanDevices(){
   int nDevices = 0;
 
@@ -143,13 +156,13 @@ void I2C_ScanDevices(){
 
 }
 void StepperRunTillPosition(uint16_t dest){
+    myStepper.moveTo(dest);
+    while(myStepper.distanceToGo() != 0);// poling
+     // Change direction once the motor reaches target position
 
-  // Change direction once the motor reaches target position
-	if (myStepper.distanceToGo() == 0) 
 		myStepper.moveTo(-myStepper.currentPosition());
-
-	// Move the motor one step
-	myStepper.run();
+  	// Move the motor one step
+  	myStepper.run();
 }
 float BMP_readTemperature_c(){
   return bmp.readTemperature();
@@ -198,7 +211,14 @@ void LcdPrintUpdatedPotValues() {
 ///////////////////////////////////////////////
 int v1 = getAnalogVoltage(PIN_VOLUME);
 int v2 = getAnalogVoltage(PIN_PRESSURE);
-LCD_PrintAnalogVoltages(v1,v2);
+ lcd.setCursor(0, 1);
+  lcd.print("HUM:");
+  lcd.setCursor(5, 1);
+  lcd.print(v1);
+  lcd.setCursor(8, 1);
+  lcd.print("Temp:");
+  lcd.setCursor(16, 1);
+  lcd.print(v2);
 }
 
  

@@ -36,7 +36,7 @@
 #define P_SETTING_BUTTON    8
 #define START_POS           200
 ///////////////////////////////////////////
-#define VOL                 111
+#define VOL                 0
 #define RATE                54
 #define P_CURRENT           54
 #define VIN                 54
@@ -77,12 +77,12 @@ double current_sum = 0;
 const uint16_t nom_vals[3][3] = { { 500, 300, 25 }, { 5, 5, 5 }, { 12, 25, 50 } };
 const uint8_t val_inc[3][3] = { { 10, 5, 1 }, { 1, 1, 1 }, { 1, 1, 2 } }; 
 const uint16_t base_delays[3] = { 950, 550, 200 };
-int8_t pot_vals[3] = { 0, 0, 0 };
+int8_t pot_vals[3] = { 0, 0 };
 
 // Create a stepper object
-AccelStepper stepper(AccelStepper::FULL4WIRE, STEPPER_MOTOR_PIN_1, STEPPER_MOTOR_PIN_3, STEPPER_MOTOR_PIN_2, STEPPER_MOTOR_PIN_4);
-
-AccelStepper myStepper(motorInterfaceType, STEP_PIN, DIR_PIN);
+///AccelStepper stepper(AccelStepper::FULL4WIRE, STEPPER_MOTOR_PIN_1, STEPPER_MOTOR_PIN_3, STEPPER_MOTOR_PIN_2, STEPPER_MOTOR_PIN_4); // uln2003 driver
+ 
+AccelStepper myStepper(motorInterfaceType, STEP_PIN, DIR_PIN);// drv8825 driver
 LiquidCrystal_I2C lcd(LCD_ADDRESS, 20, 4); 
 DHT dht(DHTPIN, DHTTYPE);
 Adafruit_BMP280  bmp; 
