@@ -86,46 +86,6 @@ void loop() {
   float temperature_c = BMP_readTemperature_c(); // BMP280 sensor
   float pressure_hPa = BMP_readPressure_hPa(); // BMP280 sensor
   float altitude_m = BMP_readAltitude_m(); // BMP280 sensor
-/*  
-  // Do something with the sensor values...
-  
-  // Calculate the difference between the target pressure levels and the actual pressure levels
-  int PIP_pressure_diff = target_PIP_pressure - PIP_pressure;
-  int PEEP_pressure_diff = target_PEEP_pressure - PEEP_pressure;
-
- 
-  // Move the arms based on the pressure level differences
-  if (PIP_pressure_diff > 0) {
-    // Move arm 1 in clockwise direction
-    arm_position_1 += PIP_pressure_diff;
-  } else if (PIP_pressure_diff < 0) {
-    // Move arm 1 in counter-clockwise direction
-    arm_position_1 -= abs(PIP_pressure_diff);
-  }
-  
-  if (PEEP_pressure_diff > 0) {
-    // Move arm 2 in counter-clockwise direction
-    arm_position_2 -= PEEP_pressure_diff;
-  } else if (PEEP_pressure_diff < 0) {
-    // Move arm 2 in clockwise direction
-    arm_position_2 += abs(PEEP_pressure_diff);
-  }
-  
-  
-  // Limit the arm positions between 0 and STEPS_PER_REVOLUTION
-  arm_position_1 = constrain(arm_position_1, 0, STEPS_PER_REVOLUTION);
-  arm_position_2 = constrain(arm_position_2, 0, STEPS_PER_REVOLUTION);
-
-
-  // Move the stepper motor to the new arm positions
-  stepper.moveTo(arm_position_1);
-  stepper.runToPosition();
-  stepper.moveTo(arm_position_2);
-  stepper.runToPosition();
-  // Display sensor values and arm positions on the LCD
-
-*/
-  
   // Delay for a short time to allow the stepper motor to move
   delay(10);
 }
